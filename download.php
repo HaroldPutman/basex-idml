@@ -8,19 +8,8 @@ mkdir($outdir, 0755, true);
 $cmds = array(
 	'SET EXPORTER omit-xml-declaration=no',
 	'OPEN ' . $db,
-	'EXPORT ' . $outdir);
-
-function fillArrayWithFileNodes(DirectoryIterator $dir, $prefix = '') {
-	$data = array();
-	foreach ($dir as $node) {
-		if ( $node->isDir() && !$node->isDot() ) {
-			$data += fillArrayWithFileNodes( new DirectoryIterator( $node->getPathname() ), $node->getPathname() );
-		} elseif ( $node->isFile() ) {
-			$data[] = $prefix . '/' . $node->getFilename();
-		}
-	}
-	return $data;
-}
+	'EXPORT ' . $outdir,
+	'CLOSE');
 
 try {
 	// create session
@@ -30,8 +19,15 @@ try {
 		foreach ($cmds as $cmd) {
 			$session->execute($cmd);
 		}
-		$files = fillArrayWithFileNodes(new DirectoryIterator($outdir), $outdir);
-
+		$files = array();
+		$fileinfos = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($outdir)
+		);
+		foreach ($fileinfos as $pathname => $fileinfo) {
+			if ($fileinfo->isFile()) {
+				$files[] = $pathname;
+			}
+		}
 		$zipname = "$db.idml";
 		$zip = new ZipArchive;
 		$zip->open($outpath . $zipname, ZipArchive::CREATE);
