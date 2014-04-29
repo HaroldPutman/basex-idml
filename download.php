@@ -8,8 +8,7 @@ mkdir($outdir, 0755, true);
 $cmds = array(
 	'SET EXPORTER omit-xml-declaration=no',
 	'OPEN ' . $db,
-	'EXPORT ' . $outdir,
-	'CLOSE ');
+	'EXPORT ' . $outdir);
 
 function fillArrayWithFileNodes(DirectoryIterator $dir, $prefix = '') {
 	$data = array();
@@ -31,7 +30,6 @@ try {
 		foreach ($cmds as $cmd) {
 			$session->execute($cmd);
 		}
-		echo $outdir;
 		$files = fillArrayWithFileNodes(new DirectoryIterator($outdir), $outdir);
 
 		$zipname = "$db.idml";

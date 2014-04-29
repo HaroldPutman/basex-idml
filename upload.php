@@ -2,6 +2,8 @@
 include "BaseXClient.php";
 
 $uploaddir = dirname(__FILE__) . '/upload/';
+mkdir($uploaddir, 0755, true);
+
 
 $uploadfile = $uploaddir . basename($_FILES['idml_file']['name']);
 if (!move_uploaded_file($_FILES['idml_file']['tmp_name'], $uploadfile)) {
